@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ztm_bootcamp/pages/first.dart';
-import 'package:ztm_bootcamp/pages/second.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,106 +7,81 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      routes: {
-        '/':(context) => const MyHomePage(),
-        '/first':(context) => const FirstPage(),
-        '/second':(context) => const SecondPage(),
-      },
+      title: 'Substack Clone',
+      home: MyHomePage(),
     );
   }
 }
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool _isSwitched = false;
-
+  final GlobalKey<FormState> _signInKey = GlobalKey();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  // final RegExp emailValid = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$');
+  final RegExp emailValid = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    appBar: AppBar(
-    backgroundColor: Colors.blue.shade400,
-    foregroundColor: Colors.white,
-    title: Text('Navigation'),
-      centerTitle: true,
+      appBar: AppBar(
+        backgroundColor: Colors.blue.shade400,
+        foregroundColor: Colors.white,
+        title: Text('Substack Clone'),
+        centerTitle: true,
     ),
 
-      body: Padding(
-        padding: const EdgeInsets.only(left: 10, right: 10),
+      body: Form(
+        key: _signInKey,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Image(
-              image: AssetImage('assets/ya.png'),
-              width: 200,
-              height: 200,
-            ),
-            SizedBox(height: 25),
-            TextField(
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.blue.shade200, width: 3), borderRadius: BorderRadius.circular(8)),
-                label: Text('Username'),
-              ),
-            ),
-            SizedBox(height: 20),
+          children: <Widget>[
+            TextFormField(
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(hintText: 'email'),
+              validator: (value){
+                if(value == null || value.isEmpty){
+                  return "Please enter an email";
+                } 
+                return null;
+              },
+            ), //email
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Notifications  '),
-                Switch(
-                    value: _isSwitched,
-                  onChanged: (value) {
-                    setState(() {
-                      _isSwitched = value;
-                    });
-                  },
-                  activeColor: Colors.blue.shade400)
-              ],
-            ),
+            TextFormField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: InputDecoration(hintText: 'password'),
+              validator: (value){
+                if(value == null || value.isEmpty){
+                  return "Please enter a password";
+                } else if(value.length < 6){
+                  return  "Password must be at least 6 characters";
+                }
+                return null;
+              },
+            ), //password
 
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                backgroundColor: Colors.blue.shade400,
-                foregroundColor: Colors.white
-              ),
-              child: Text('Save'),
-            ),
+            ElevatedButton(onPressed: (){
+              if(_signInKey.currentState!.validate()){
+                debugPrint('Email: ${_emailController.text}');
+                debugPrint('Password: ${_passwordController.text}');
+              }
 
-            TextButton(
-                onPressed: (){
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => FirstPage(name: 'Vala',)));
-                },
-                child: Text('First Page')),
-            TextButton(
-                onPressed: (){
-                  Navigator.pushNamed(context, '/second', arguments: 'Jeremy');
-                },
-                child: Text('Second Page')),
-
-
-          ]
-
-          ),
-      ),
+            }, child: Text('Continue'))
+          ],
+        ),
+      )
       );
 
   }
 }
+
